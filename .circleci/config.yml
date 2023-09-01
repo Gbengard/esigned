@@ -79,7 +79,7 @@ jobs:
           name: Create EKS Cluster
           command: |
             echo
-            eksctl create cluster -f ./circleci/eks-cluster.yml
+            eksctl create cluster -f ./.circleci/eks-cluster.yml
             kubectl get nodes -o wide
             aws eks update-kubeconfig --name eks-cluster --region us-east-1
   create-argocd:
