@@ -58,8 +58,7 @@ jobs:
     machine: true
     steps:
       - checkout
-
-      
+          
 
       - run:
           name: Build and Push Docker Image
@@ -68,12 +67,13 @@ jobs:
             docker build -t gbengard/my-docker-image:tag .
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker push gbengard/my-docker-image:tag
+
   create-eks-cluster-app:
     docker:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - install-kubectl-and-eksctl
+      - install-dependencies
       - run:
           name: Create EKS Cluster
           command: |
@@ -81,14 +81,24 @@ jobs:
             eksctl create cluster -f eks-cluster.yaml
             kubectl get nodes -o wide
             aws eks update-kubeconfig --name eks-cluster --region us-east-1
-
+  create-argocd:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - install-dependencies
       - run:
           name: Install argocd
           command: |
             kubectl create namespace argocd
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
             argocd version
-
+  create-argocd-cli:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - install-dependencies
       - run:
           name: Install Argocd CLI
           command: |
@@ -97,7 +107,12 @@ jobs:
             chmod +x argocd
             mv argocd-linux-amd64 /usr/local/bin
             argocd version
-
+  create-argocd-app:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - install-dependencies
       - run:
           name: Create Argocd Application
           command: |
@@ -105,8 +120,15 @@ jobs:
             argocd app create my-app --repo <repo-url> --path <path> --dest-server https://kubernetes.default.svc --dest-namespace <namespace>
 
 workflows:
-  version: 2
-  build-and-deploy:
+  the_jobs:
     jobs:
       - build-and-deploy:
           context: Credentials
+      - create-eks-cluster-app:
+          requires: [build-and-deploy]
+      - create-argocd:
+          requires: [create-eks-cluster-app]
+      - create-argocd-cli:
+          requires: [create-argocd]
+      - create-argocd-app:
+          requires: [create-argocd-cli]
