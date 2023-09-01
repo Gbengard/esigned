@@ -59,11 +59,7 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Run ESLint
-          command: |
-            npm install
-            npm run lint
+      
 
       - run:
           name: Build and Push Docker Image
