@@ -67,7 +67,7 @@ jobs:
             # Build and push your Docker image
             docker build -t my-docker-image:tag .
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-            docker push my-docker-image:tag
+            docker push gbengard/my-docker-image:tag
 
       - run:
           name: Create EKS Cluster
