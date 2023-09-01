@@ -135,7 +135,10 @@ workflows:
           context: Credentials
       - create-argocd:
           requires: [create-eks-cluster-app]
+          context: Credentials
       - create-argocd-cli:
           requires: [create-argocd]
+          context: Credentials
       - create-argocd-app:
           requires: [create-argocd-cli]
+          context: Credentials
