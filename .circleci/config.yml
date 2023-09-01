@@ -86,6 +86,7 @@ jobs:
   create-argocd:
     docker:
       - image: amazon/aws-cli
+      - image: argoproj/argocli
     steps:
       - checkout
       - install-dependencies
@@ -95,23 +96,11 @@ jobs:
             kubectl create namespace argocd
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
             argocd version
-  create-argocd-cli:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - install-dependencies
-      - run:
-          name: Install Argocd CLI
-          command: |
-            # Install Argocd CLI
-            wget https://github.com/argoproj/argo-cd/releases/download/v2.5.22/argocd-linux-amd64
-            chmod +x argocd
-            mv argocd-linux-amd64 /usr/local/bin
-            argocd version
+  
   create-argocd-app:
     docker:
       - image: amazon/aws-cli
+      - image: argoproj/argocli
     steps:
       - checkout
       - install-dependencies
@@ -132,9 +121,7 @@ workflows:
       - create-argocd:
           requires: [create-eks-cluster-app]
           context: Credentials
-      - create-argocd-cli:
-          requires: [create-argocd]
-          context: Credentials
+      
       - create-argocd-app:
-          requires: [create-argocd-cli]
+          requires: [create-argocd]
           context: Credentials
