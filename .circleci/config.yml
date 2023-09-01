@@ -55,7 +55,8 @@ commands:
 
 jobs:
   build-and-deploy:
-    executor: default-executor
+    docker: 
+      - image: circleci/python:3.8
     steps:
       - checkout
 
