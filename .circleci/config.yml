@@ -21,9 +21,9 @@ commands:
 
   install-dependencies:
     steps:
-      #- run:
-          #name: Install AWS CLI and Configure
-          #command: |
+      - run:
+          name: Install AWS CLI and Configure
+          command: |
             # Install AWS CLI
             # yum update && yum install -y unzip
             # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -32,9 +32,9 @@ commands:
             # aws --version
 
             # Configure AWS CLI with credentials (use environment variables)
-            # aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            # aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            # aws configure set default.region $AWS_DEFAULT_REGION
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_DEFAULT_REGION
 
       - run:
           name: Install kubectl
