@@ -2,7 +2,14 @@ version: 2.1
 
 orbs:
   sam: circleci/aws-sam-serverless@3.1.0
-  
+
+workflows:
+  version: 2
+  build-and-push-node1:
+    jobs:
+      - build-and-push-docker-image:
+          context: Credentials
+
 jobs:
   lint-app:
     docker:
@@ -31,9 +38,4 @@ jobs:
             docker build -t  gbengard/capstone:v1 .
             docker login -u gbengard -p $DOCKERHUB_TOKEN
             docker push gbengard/capstone:v1
-workflows:
-  version: 2
-  build-and-push-node1:
-    jobs:
-      - build-and-push-docker-image:
-          context: Credentials
+
