@@ -65,7 +65,7 @@ jobs:
           name: Build and Push Docker Image
           command: |
             # Build and push your Docker image
-            docker build -t my-docker-image:tag .
+            docker build -t gbengard/my-docker-image:tag .
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker push gbengard/my-docker-image:tag
 
