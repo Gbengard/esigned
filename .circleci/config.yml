@@ -1,37 +1,33 @@
 version: 2.1
-executors:
-  default-executor:
-    docker:
-      - image: circleci/node:latest
+
+orbs:
+  sam: circleci/aws-sam-serverless@3.1.0
+  
 jobs:
-  build-and-push-docker-image:
-    executor: default-executor
+  lint-app:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: Dockerfiles lint
+          command: |
+            npm install
+            npm run lint
+  
+  build-and-push-node1:
     machine: true
     steps:
       - checkout
-  
-      # Authenticate with Docker Hub using environment variables
       - run:
-          name: Authenticate with Docker Hub
+          name: Build docker container for V1
           command: |
-            echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
-
-      # Build and tag the Docker image
-      - run:
-          name: Build and tag Docker image
-          command: |
-            docker build -t $DOCKERHUB_USERNAME/my-app:latest .
-
-      # Push the Docker image to Docker Hub
-      - run:
-          name: Push Docker image to Docker Hub
-          command: |
-            docker push $DOCKERHUB_USERNAME/my-app:latest
-            
-
-workflows:
-  version: 2
-  build-and-push:
-    jobs:
-      - build-and-push-docker-image:
-          context: credentials
+            echo
+            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz 
+            sudo tar -xvf node-v18.0.0-linux-x64.tar.xz 
+            sudo cp -r node-v18.0.0-linux-x64/{bin,include,lib,share} /usr/ 
+            node --version => v18.0.0
+            sudo apt install nodejs
+            docker build -t  gbengard/capstone:v1 .
+            docker login -u gbengard -p $DOCKERHUB_TOKEN
+            docker push gbengard/capstone:v1
