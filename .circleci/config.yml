@@ -132,6 +132,7 @@ workflows:
           context: Credentials
       - create-eks-cluster-app:
           requires: [build-and-deploy]
+          context: Credentials
       - create-argocd:
           requires: [create-eks-cluster-app]
       - create-argocd-cli:
