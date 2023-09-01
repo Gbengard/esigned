@@ -12,7 +12,7 @@ commands:
           version: 20.10.7
       - run:
           name: Destroy EKS Cluster
-          when: on_failure
+          when: on_fail
           command: |
             # Run commands to destroy the EKS cluster
             eksctl delete cluster --name eks-cluster
@@ -43,7 +43,7 @@ commands:
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x kubectl
             sudo mv kubectl /usr/local/bin/
-	    kubectl version --client
+            kubectl version --client
 
       - run:
           name: Install eksctl
@@ -51,7 +51,7 @@ commands:
             # Install eksctl
             curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
             sudo mv /tmp/eksctl /usr/local/bin
-	    eksctl version
+            eksctl version
 
 jobs:
   build-and-deploy:
@@ -85,7 +85,7 @@ jobs:
           name: Install argocd
           command: |
             kubectl create namespace argocd
-	    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
+            kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
             argocd version
 
       - run:
@@ -93,9 +93,9 @@ jobs:
           command: |
             # Install Argocd CLI
             wget https://github.com/argoproj/argo-cd/releases/download/v2.5.22/argocd-linux-amd64
-	    chmod +x argocd
-	    mv argocd-linux-amd64 /usr/local/bin
-	    argocd version
+            chmod +x argocd
+            mv argocd-linux-amd64 /usr/local/bin
+            argocd version
 
       - run:
           name: Create Argocd Application
@@ -108,7 +108,3 @@ workflows:
   build-and-deploy:
     jobs:
       - build-and-deploy
-    on_failure:
-      when: always
-      do:
-        - destroy-cluster
