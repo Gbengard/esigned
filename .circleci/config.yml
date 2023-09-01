@@ -1,11 +1,12 @@
 version: 2.1
 jobs:
   build-and-push-docker-image:
+    machine: true
     docker:
       - image: cimg/python:3.8.4
     steps:
       - checkout
-
+  
       # Authenticate with Docker Hub using environment variables
       - run:
           name: Authenticate with Docker Hub
