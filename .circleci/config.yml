@@ -25,7 +25,7 @@ commands:
           name: Install AWS CLI and Configure
           command: |
             # Install AWS CLI
-            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz 
+            
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
