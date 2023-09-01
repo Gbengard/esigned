@@ -68,7 +68,12 @@ jobs:
             docker build -t gbengard/my-docker-image:tag .
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker push gbengard/my-docker-image:tag
-
+  create-eks-cluster-app:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - install-kubectl-and-eksctl
       - run:
           name: Create EKS Cluster
           command: |
