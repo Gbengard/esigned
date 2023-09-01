@@ -1,9 +1,11 @@
 version: 2.1
+executors:
+  default-executor:
+    docker:
+      - image: circleci/node:latest
 jobs:
   build-and-push-docker-image:
-    machine: true
-    docker:
-      - image: cimg/python:3.8.4
+    executor: default-executor
     steps:
       - checkout
   
