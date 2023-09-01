@@ -4,24 +4,12 @@ orbs:
   sam: circleci/aws-sam-serverless@3.1.0
 
 workflows:
-  version: 2
-  build-and-push-node1:
+  the_jobs:
     jobs:
-      - build-and-push-docker-image:
+      - build-and-push-node1:
           context: Credentials
 
 jobs:
-  lint-app:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Dockerfiles lint
-          command: |
-            npm install
-            npm run lint
-  
   build-and-push-node1:
     machine: true
     steps:
