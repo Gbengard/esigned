@@ -104,10 +104,11 @@ jobs:
             helm repo add argo https://argoproj.github.io/argo-helm
             helm install argocd argo/argo-cd \
               --namespace argocd \
-              --set server.ingress.enabled=false \ 
+              
             helm upgrade argocd argo/argo-cd \
               --namespace argocd \
               --reuse-values \
+              --set server.ingress.enabled=false \ 
               --set server.service.type=NodePort \
               --set server.service.nodePort=32007
             helm upgrade argocd argo/argo-cd \
