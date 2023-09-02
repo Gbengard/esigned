@@ -44,7 +44,8 @@ commands:
             chmod +x kubectl
             mv kubectl /usr/local/bin/
             kubectl version --client
-
+            
+            yum install tar gzip -y
             yum update
             yum install openssl -y
             curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
