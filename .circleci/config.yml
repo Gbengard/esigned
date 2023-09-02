@@ -45,6 +45,10 @@ commands:
             mv kubectl /usr/local/bin/
             kubectl version --client
 
+            curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+            chmod +x get_helm.sh
+            ./get_helm.sh
+
       - run:
           name: Install eksctl
           command: |
@@ -59,8 +63,6 @@ jobs:
     machine: true
     steps:
       - checkout
-          
-
       - run:
           name: Build and Push Docker Image
           command: |
@@ -93,10 +95,24 @@ jobs:
       - run:
           name: Install argocd
           command: |
-            INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-            PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
-            echo "EC2 Instance IP: $PUBLIC_IP"
-            ssh -i EC2Tutorial ec2-user@$PUBLIC_IP
+            EKS_CLUSTER_NAME="your-eks-cluster-name"
+            EKS_CLUSTER_DOMAIN=$(aws eks describe-cluster --name "$EKS_CLUSTER_NAME" --query "cluster.endpoint" --output text)
+            helm repo add argo https://argoproj.github.io/argo-helm
+            helm install argocd argo/argo-cd \
+              --namespace argocd \
+              --set server.ingress.enabled=false \  # Disable Ingress
+              --set server.service.type=NodePort \   # Set service type to NodePort
+              --set server.service.nodePort=32007 \  # Set the NodePort to 32007
+              --set server.ingress.hosts[0].name="$EKS_CLUSTER_DOMAIN" \
+              --set server.ingress.hosts[0].path=/ \
+              --set server.ingress.tls[0].hosts[0]="$EKS_CLUSTER_DOMAIN" \
+              --set server.ingress.tls[0].secretName=argocd-tls-secret
+              ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
+              echo "Initial ArgoCD Password: $ARGOCD_PASSWORD"
+
+
+
+
             kubectl create namespace argocd
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
             kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort", "ports": [{"name": "http", "port": 80, "nodePort": 32003}]}}'
