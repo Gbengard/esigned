@@ -44,7 +44,7 @@ commands:
             chmod +x kubectl
             mv kubectl /usr/local/bin/
             kubectl version --client
-            
+
             yum install tar gzip -y
             yum update
             yum install openssl -y
@@ -99,7 +99,7 @@ jobs:
       - run:
           name: Install argocd
           command: |
-            EKS_CLUSTER_NAME="your-eks-cluster-name"
+            EKS_CLUSTER_NAME="my-eks-cluster"
             EKS_CLUSTER_DOMAIN=$(aws eks describe-cluster --name "$EKS_CLUSTER_NAME" --query "cluster.endpoint" --output text)
             helm repo add argo https://argoproj.github.io/argo-helm
             helm install argocd argo/argo-cd \
