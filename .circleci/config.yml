@@ -51,7 +51,7 @@ commands:
             curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
             chmod +x get_helm.sh
             ./get_helm.sh
-            export KUBECONFIG=~/.kube/my-eks-cluster
+            export KUBECONFIG=$HOME/.kube/config
 
 
       - run:
@@ -102,6 +102,7 @@ jobs:
           command: |
             EKS_CLUSTER_NAME="my-eks-cluster"
             EKS_CLUSTER_DOMAIN=$(aws eks describe-cluster --name "$EKS_CLUSTER_NAME" --query "cluster.endpoint" --output text)
+            helm repo update
             helm repo add argo https://argoproj.github.io/argo-helm
             helm install argocd argo/argo-cd \
               --namespace argocd \
