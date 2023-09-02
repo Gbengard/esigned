@@ -44,10 +44,13 @@ commands:
             chmod +x kubectl
             mv kubectl /usr/local/bin/
             kubectl version --client
-
+            
+            sudo apt-get update
+            sudo apt-get install openssl
             curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
             chmod +x get_helm.sh
             ./get_helm.sh
+
 
       - run:
           name: Install eksctl
