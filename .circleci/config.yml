@@ -105,8 +105,14 @@ jobs:
             helm install argocd argo/argo-cd \
               --namespace argocd \
               --set server.ingress.enabled=false \ 
-              --set server.service.type=NodePort \  
-              --set server.service.nodePort=32007 \ 
+            helm upgrade argocd argo/argo-cd \
+              --namespace argocd \
+              --reuse-values \
+              --set server.service.type=NodePort \
+              --set server.service.nodePort=32007
+            helm upgrade argocd argo/argo-cd \
+              --namespace argocd \
+              --reuse-values \
               --set server.ingress.hosts[0].name="$EKS_CLUSTER_DOMAIN" \
               --set server.ingress.hosts[0].path=/ \
               --set server.ingress.tls[0].hosts[0]="$EKS_CLUSTER_DOMAIN" \
