@@ -88,6 +88,7 @@ jobs:
             echo
             eksctl create cluster -f ./.circleci/eks-cluster.yml
             kubectl get nodes -o wide
+            eksctl utils write-kubeconfig --cluster my-eks-cluster
             aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
             export KUBECONFIG=$HOME/.kube/config
             
