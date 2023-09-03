@@ -44,13 +44,14 @@ commands:
             chmod +x kubectl
             mv kubectl /usr/local/bin/
             kubectl version --client
+            
 
-            yum install tar gzip -y
-            yum update
-            yum install openssl -y
-            curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-            chmod +x get_helm.sh
-            ./get_helm.sh
+            #yum install tar gzip -y
+            #yum update
+            #yum install openssl -y
+            #curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+            #chmod +x get_helm.sh
+            #./get_helm.sh
           
 
 
@@ -90,7 +91,7 @@ jobs:
             kubectl get nodes -o wide
             eksctl utils write-kubeconfig --cluster my-eks-cluster
             aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
-            export KUBECONFIG=$HOME/.kube/config
+            
             
   create-argocd:
     docker:
@@ -102,8 +103,9 @@ jobs:
       - run:
           name: Install argocd
           command: |
-            EKS_CLUSTER_NAME="my-eks-cluster"
-            EKS_CLUSTER_DOMAIN=$(aws eks describe-cluster --name "$EKS_CLUSTER_NAME" --query "cluster.endpoint" --output text)
+            mkdir -p $HOME/.kube
+            sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+            sudo chown $(id -u):$(id -g) $HOME/.kube/config
             kubectl create namespace argocd
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
             argocd version
