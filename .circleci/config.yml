@@ -51,7 +51,7 @@ commands:
             curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
             chmod +x get_helm.sh
             ./get_helm.sh
-            export KUBECONFIG=$HOME/.kube/config
+          
 
 
       - run:
@@ -89,6 +89,7 @@ jobs:
             eksctl create cluster -f ./.circleci/eks-cluster.yml
             kubectl get nodes -o wide
             aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
+            export KUBECONFIG=$HOME/.kube/config
             
   create-argocd:
     docker:
@@ -103,6 +104,7 @@ jobs:
             EKS_CLUSTER_NAME="my-eks-cluster"
             EKS_CLUSTER_DOMAIN=$(aws eks describe-cluster --name "$EKS_CLUSTER_NAME" --query "cluster.endpoint" --output text)
             helm repo add argo https://argoproj.github.io/argo-helm
+            helm repo update --kubeconfig ~/.kube/config
             helm install argocd argo/argo-cd \
               --namespace argocd \
               
