@@ -103,7 +103,6 @@ jobs:
             EKS_CLUSTER_NAME="my-eks-cluster"
             EKS_CLUSTER_DOMAIN=$(aws eks describe-cluster --name "$EKS_CLUSTER_NAME" --query "cluster.endpoint" --output text)
             helm repo add argo https://argoproj.github.io/argo-helm
-            helm repo update
             helm install argocd argo/argo-cd \
               --namespace argocd \
               
