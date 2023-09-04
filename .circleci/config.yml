@@ -91,31 +91,30 @@ jobs:
             echo
             eksctl create cluster -f ./.circleci/eks-cluster.yml
             kubectl get nodes -o wide
-            eksctl utils write-kubeconfig --cluster my-eks-cluster
-            aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
-            
-            
-  create-argocd:
-    docker:
-      - image: amazon/aws-cli
-      - image: argoproj/argocli
-    steps:
-      - checkout
-      - install-dependencies
-      - run:
-          name: Install argocd
-          command: |
-            yum install jq -y
-            aws ec2 describe-instances > ec2.json
-            IP_ADDRESS=$(cat 'ec2.json' | jq -r '.Reservations[].Instances[].PublicIpAddress')
-            export ARGO_SERVER="${IP_ADDRESS}:8080"
-            echo "ARGO_SERVER is set to: $ARGO_SERVER"
-
+            # eksctl utils write-kubeconfig --cluster my-eks-cluster
+            # aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
             kubectl create namespace argocd
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
             argocd version
             ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
             echo "Initial ArgoCD Password: $ARGOCD_PASSWORD"
+            
+            
+  #create-argocd:
+    #docker:
+      #- image: amazon/aws-cli
+      #- image: argoproj/argocli
+    #steps:
+      #- checkout
+      #- install-dependencies
+      #- run:
+          #name: Install argocd
+          #command: |
+            #kubectl create namespace argocd
+            #kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
+            #argocd version
+            #ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
+            #echo "Initial ArgoCD Password: $ARGOCD_PASSWORD"
 
   create-argocd-app:
     docker:
@@ -138,10 +137,10 @@ workflows:
       - create-eks-cluster-app:
           requires: [build-and-deploy]
           context: Credentials
-      - create-argocd:
-          requires: [create-eks-cluster-app]
-          context: Credentials
+      #- create-argocd:
+          #requires: [create-eks-cluster-app]
+          #context: Credentials
       
       - create-argocd-app:
-          requires: [create-argocd]
+          requires: [create-eks-cluster-app]
           context: Credentials
