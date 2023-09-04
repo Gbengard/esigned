@@ -105,7 +105,7 @@ jobs:
       - run:
           name: Install argocd
           command: |
-            IP_ADDRESS=$(aws eks describe-nodegroup --cluster-name my-eks-cluster --nodegroup-name my-eks-cluster-ng-1 --query 'nodegroup.resources[0].autoScalingGroups[0].instances[0].publicIpAddress' --output text)
+            IP_ADDRESS=$(aws eks describe-nodegroup --cluster-name my-eks-cluster --nodegroup-name my-eks-cluster-nodegroup-ng-1 --query 'nodegroup.resources[0].autoScalingGroups[0].instances[0].publicIpAddress' --output text)
             export ARGO_SERVER="${PUBLIC_IP}:8080"
             echo "ARGO_SERVER is set to: $ARGO_SERVER"
 
