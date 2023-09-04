@@ -105,8 +105,10 @@ jobs:
       - run:
           name: Install argocd
           command: |
-            IP_ADDRESS=$(aws eks describe-nodegroup --cluster-name my-eks-cluster --nodegroup-name my-eks-cluster-nodegroup-ng-1 --query 'nodegroup.resources[0].autoScalingGroups[0].instances[0].publicIpAddress' --output text)
-            export ARGO_SERVER="${PUBLIC_IP}:8080"
+            yum install jq -y
+            aws ec2 describe-instances > ec2.json
+            IP_ADDRESS=$(cat 'ec2.json' | jq -r '.Reservations[].Instances[].PublicIpAddress')
+            export ARGO_SERVER="${IP_ADDRESS}:8080"
             echo "ARGO_SERVER is set to: $ARGO_SERVER"
 
             kubectl create namespace argocd
