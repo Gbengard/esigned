@@ -105,6 +105,10 @@ jobs:
       - run:
           name: Install argocd
           command: |
+            IP_ADDRESS=$(aws eks describe-nodegroup --cluster-name my-eks-cluster --nodegroup-name ng-1 --query 'nodegroup.resources[0].autoScalingGroups[0].instances[0].publicIpAddress' --output text)
+            export ARGO_SERVER="${PUBLIC_IP}:8080"
+            echo "ARGO_SERVER is set to: $ARGO_SERVER"
+
             kubectl create namespace argocd
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.22/manifests/install.yaml
             argocd version
