@@ -13,7 +13,7 @@ availabilityZones:
 
 nodeGroups:
   - name: ng-1
-    ami: ami-053b0d53c279acc90
+    amiFamily: Ubuntu20.04
     desiredCapacity: 1
     ssh:
       allow: true # Enable SSH access
