@@ -88,7 +88,9 @@ jobs:
             # eksctl utils write-kubeconfig --cluster my-eks-cluster
             # aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
             kubectl create namespace argocd
-            kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.3.0-rc5/manifests/install.yaml
+            kubectl create namespace argocd
+            kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+            sleep 10
             kubectl -n argocd get secret
             ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
             echo "Initial ArgoCD Password: $ARGOCD_PASSWORD"
