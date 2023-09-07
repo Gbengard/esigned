@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: agrocd-app
+spec:
+  destination:
+    name: ''
+    namespace: 'my-app'
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: /
+    repoURL: github.com/gbengard/e-signed-html.git
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
