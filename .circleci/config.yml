@@ -60,7 +60,7 @@ jobs:
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker push gbengard/my-docker-image:tag
 
-  create-eks-cluster-app:
+  create-eks-and-argocd:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -73,16 +73,9 @@ jobs:
             eksctl create cluster -f ./.circleci/eks-cluster.yml
             kubectl get nodes -o wide
                         
-  create-argocd:
-    docker:
-      - image: amazon/aws-cli   
-    steps:
-      - checkout
-      - install-dependencies
       - run:
           name: Install argocd
           command: |
-            kubectl get nodes -o wide
             kubectl create namespace argocd
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
             sleep 60
@@ -100,12 +93,6 @@ jobs:
               "admin.passwordMtime": "'$(date +%FT%T%Z)'"
             }}'
             
-  create-argocd-app:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - install-dependencies
       - run:
           name: Create Argocd Application
           command: |
@@ -117,12 +104,6 @@ workflows:
     jobs:
       - build-and-deploy:
           context: Credentials
-      - create-eks-cluster-app:
+      - create-eks-and-argocd:
           requires: [build-and-deploy]
-          context: Credentials
-      - create-argocd:
-          requires: [create-eks-cluster-app]
-          context: Credentials
-      - create-argocd-app:
-          requires: [create-argocd]
           context: Credentials
