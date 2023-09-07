@@ -8,7 +8,7 @@ spec:
     namespace: 'my-app'
     server: 'https://kubernetes.default.svc'
   source:
-    path: /
+    path: app
     repoURL: github.com/gbengard/e-signed-html.git
     targetRevision: HEAD
   sources: []
