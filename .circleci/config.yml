@@ -92,7 +92,7 @@ jobs:
             sleep 60
             kubectl -n argocd get pods
             kubectl -n argocd get svc
-            kubectl patch svc argocd-server -p '{"spec": {"type": "NodePort", "ports": [{"name": "argocd-port", "port": 32007, "nodePort": 32007}]}}'
+            kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort", "ports": [{"name": "argocd-port", "port": 32007, "nodePort": 32007}]}}'
             
             #ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
             #echo "Initial ArgoCD Password: $ARGOCD_PASSWORD"
