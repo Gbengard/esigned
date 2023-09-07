@@ -109,7 +109,7 @@ jobs:
           name: Create Argocd Application
           command: |
             # Create argocd application
-            argocd app create my-app --repo <repo-url> --path <path> --dest-server https://kubernetes.default.svc --dest-namespace <namespace>
+            kubectl apply -f agro-app.yml
 
 workflows:
   the_jobs:
