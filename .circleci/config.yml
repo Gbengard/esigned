@@ -47,7 +47,6 @@ jobs:
     docker:
       - image: circleci/node:latest
     steps:
-      steps:
       - checkout
       - run:
           name: Linting of dockerfiles
@@ -109,7 +108,7 @@ jobs:
 workflows:
   the_jobs:
     jobs:
-      -linting
+      - linting
       - build-and-deploy:
           requires: [linting]
           context: Credentials
