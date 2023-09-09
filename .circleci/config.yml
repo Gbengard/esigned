@@ -51,8 +51,8 @@ jobs:
       - run:
           name: Linting of dockerfiles
           command: |
-            npm install
             cd ./js
+            npm install
             npm run lint
             
   build-and-deploy:
