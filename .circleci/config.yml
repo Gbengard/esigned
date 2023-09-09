@@ -1,6 +1,10 @@
 version: 2.1
 orbs:
   sam: circleci/aws-sam-serverless@3.1.0
+executors:
+  default-executor:
+    docker:
+      - image: aquasec/trivy
 
 commands:
   destroy-cluster:
@@ -57,8 +61,6 @@ jobs:
             
   build-and-deploy:
     machine: true
-    docker:
-      - image: aquasec/trivy
     steps:
       - checkout
       - run:
@@ -66,6 +68,9 @@ jobs:
           command: |
             # Build and push your Docker image
             docker build -t gbengard/my-docker-image:tag .
+            docker pull aquasec/trivy:0.45.0
+            docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.45.0 image gbengard/my-docker-image:tag
+
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker push gbengard/my-docker-image:tag
 
