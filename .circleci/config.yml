@@ -57,6 +57,8 @@ jobs:
             
   build-and-deploy:
     machine: true
+    docker:
+      - image: aquasec/trivy
     steps:
       - checkout
       - run:
