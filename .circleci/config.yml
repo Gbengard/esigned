@@ -111,7 +111,8 @@ jobs:
           name: Create Argocd Application
           command: |
             # Create argocd application
-            kubectl apply -f agrocd-app.yml
+            kubectl apply -f agrocd-app.yml -n argocd
+            sleep 30
             kubectl -n my-app get all
 workflows:
   the_jobs:
