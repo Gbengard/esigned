@@ -124,6 +124,7 @@ jobs:
             --dest-server https://kubernetes.default.svc \
             --dest-namespace my-app
             argocd app set argocd-app --sync-policy auto --self-heal
+            sleep 30
             kubectl -n my-app get all
 workflows:
   the_jobs:
