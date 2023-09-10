@@ -22,9 +22,9 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-namespace: my-app
 metadata:
   name: my-app-service
+  namespace: my-app
 spec:
   selector:
     app: my-app
