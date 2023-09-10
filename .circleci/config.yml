@@ -106,13 +106,23 @@ jobs:
               "admin.password": "$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa",
               "admin.passwordMtime": "'$(date +%FT%T%Z)'"
             }}'
-            
+            wget https://github.com/argoproj/argo-cd/releases/download/v2.6.15/argocd-linux-amd64
+            chmod +x argocd-linux-amd64 
+            mv argocd-linux-amd64 /usr/local/bin/argocd
+            argocd version
+            argocd login $ARGOCD --username admin --password password --insecure
       - run:
           name: Create Argocd Application
           command: |
             # Create argocd application
-            kubectl apply -f agrocd-app.yml -n argocd
-            sleep 30
+            kubectl create namespace my-app
+            argocd app create argocd-app \
+            --project default \
+            --repo https://github.com/Gbengard/esigned-html.git \
+            --path ./app \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace my-app
+            argocd app set argocd-app --sync-policy auto --self-heal
             kubectl -n my-app get all
 workflows:
   the_jobs:
