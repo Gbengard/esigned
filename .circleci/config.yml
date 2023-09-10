@@ -2,11 +2,6 @@ version: 2.1
 orbs:
   sam: circleci/aws-sam-serverless@3.1.0
 
-executors:
-  default-executor:
-    docker:
-      - image: circleci/node:latest
-
 commands:
   destroy-cluster:
     steps:
@@ -27,7 +22,7 @@ commands:
             # Configure AWS CLI with credentials (use environment variables)
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set default.region $AWS_DEFAULT_REGION
+            aws configure set default.region us-east-1
 
       - run:
           name: Install kubectl
@@ -48,19 +43,39 @@ commands:
             eksctl version
 
 jobs:
+  linting:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Linting of dockerfiles
+          command: |
+            cd ./js
+            npm install
+            npm run lint
+            
   build-and-deploy:
     machine: true
     steps:
       - checkout
       - run:
-          name: Build and Push Docker Image
+          name: Build Docker Image
           command: |
-            # Build and push your Docker image
+            # Build Docker image
             docker build -t gbengard/my-docker-image:tag .
+      - run:
+          name: Docker Image Security Scanning
+          command: |
+            docker pull aquasec/trivy:0.45.0
+            docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.45.0 image gbengard/my-docker-image:tag
+      - run:
+          name: Push Docker Image
+          command: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker push gbengard/my-docker-image:tag
 
-  create-eks-and-argocd:
+  eks-and-argocd:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -70,7 +85,7 @@ jobs:
           name: Create EKS Cluster
           command: |
             echo
-            eksctl create cluster -f ./.circleci/eks-cluster.yml
+            eksctl create cluster -f eks-cluster.yml
             kubectl get nodes -o wide
                         
       - run:
@@ -80,7 +95,6 @@ jobs:
             kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
             sleep 60
             kubectl -n argocd get pods
-            kubectl -n argocd get svc
             kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
             sleep 60
             ARGOCD=$(kubectl get svc -n argocd argocd-server -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
@@ -92,18 +106,33 @@ jobs:
               "admin.password": "$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa",
               "admin.passwordMtime": "'$(date +%FT%T%Z)'"
             }}'
-            
+            curl -LO https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64 
+            mv argocd-linux-amd64 /usr/local/bin/argocd
+            echo $ARGOCD
+            sleep 60
+            argocd login $ARGOCD --username admin --password password --insecure
       - run:
           name: Create Argocd Application
           command: |
             # Create argocd application
-            kubectl apply -f agro-app.yml
-
+            kubectl create namespace my-app
+            argocd app create argocd-app \
+            --project default \
+            --repo https://github.com/Gbengard/esigned-html.git \
+            --path ./app \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace my-app
+            argocd app set argocd-app --sync-policy auto --self-heal
+            sleep 30
+            kubectl -n my-app get all
 workflows:
   the_jobs:
     jobs:
+      - linting
       - build-and-deploy:
+          requires: [linting]
           context: Credentials
-      - create-eks-and-argocd:
+      - eks-and-argocd:
           requires: [build-and-deploy]
           context: Credentials

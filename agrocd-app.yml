@@ -1,21 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: agrocd-app
+  name: argocd-app
+  namespace: argocd
 spec:
-  destination:
-    name: ''
-    namespace: 'my-app'
-    server: 'https://kubernetes.default.svc'
-  source:
-    path: app
-    repoURL: github.com/gbengard/e-signed-html.git
-    targetRevision: HEAD
-  sources: []
   project: default
+  source:
+    repoURL: https://github.com/gbengard/e-signed-html.git
+    targetRevision: HEAD
+    path: ./app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: my-app
   syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
