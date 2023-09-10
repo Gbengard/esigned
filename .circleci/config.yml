@@ -75,7 +75,7 @@ jobs:
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
             docker push gbengard/my-docker-image:tag
 
-  create-eks-and-argocd:
+  eks-and-argocd:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -120,6 +120,6 @@ workflows:
       - build-and-deploy:
           requires: [linting]
           context: Credentials
-      - create-eks-and-argocd:
+      - eks-and-argocd:
           requires: [build-and-deploy]
           context: Credentials
