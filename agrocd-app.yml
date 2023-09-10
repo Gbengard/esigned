@@ -5,8 +5,8 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: 'my-app'
-    server: 'https://kubernetes.default.svc'
+    namespace: my-app
+    server: https://kubernetes.default.svc
   source:
     path: ./app
     repoURL: https://github.com/gbengard/e-signed-html.git
