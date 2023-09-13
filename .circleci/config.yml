@@ -63,7 +63,7 @@ jobs:
           name: Build Docker Image
           command: |
             # Build Docker image
-            docker build -t gbengard/my-docker-image:tag .
+            docker build -t gbengard/esigned:v1 .
       - run:
           name: Docker Image Security Scanning
           command: |
@@ -73,7 +73,7 @@ jobs:
           name: Push Docker Image
           command: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-            docker push gbengard/my-docker-image:tag
+            docker push gbengard/esigned:v1
 
   eks-and-argocd:
     docker:
