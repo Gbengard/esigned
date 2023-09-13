@@ -55,7 +55,7 @@ jobs:
             npm install
             npm run lint
             
-  build-and-deploy:
+  build-and-push:
     machine: true
     steps:
       - checkout
@@ -68,7 +68,7 @@ jobs:
           name: Docker Image Security Scanning
           command: |
             docker pull aquasec/trivy:0.45.0
-            docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.45.0 image gbengard/my-docker-image:tag
+            docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.45.0 image gbengard/esigned:v1
       - run:
           name: Push Docker Image
           command: |
@@ -126,11 +126,12 @@ jobs:
             argocd app set argocd-app --sync-policy auto --self-heal
             sleep 30
             kubectl -n my-app get all
+      -  destroy-cluster
 workflows:
   the_jobs:
     jobs:
       - linting
-      - build-and-deploy:
+      - build-and-push:
           requires: [linting]
           context: Credentials
       - eks-and-argocd:
