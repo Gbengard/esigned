@@ -135,5 +135,5 @@ workflows:
           requires: [linting]
           context: Credentials
       - eks-and-argocd:
-          requires: [build-and-deploy]
+          requires: [build-and-push]
           context: Credentials
